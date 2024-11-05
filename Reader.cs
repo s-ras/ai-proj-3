@@ -8,7 +8,7 @@ namespace ai_proj_3 {
         public static void ParseArgs(string[] args) {
             if (args.Length == 0) {
                 Console.BackgroundColor = ConsoleColor.Green;
-                Console.WriteLine("No arguments given. Defaulting to file \"dataset.txt\" ");
+                Console.WriteLine($"No arguments given. Defaulting to file \"{filePath}\" ");
                 Console.ResetColor();
                 return;
             } else if (args.Length > 1) {

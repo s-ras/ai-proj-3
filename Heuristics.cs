@@ -32,9 +32,6 @@ namespace ai_proj_3 {
         }
 
         public static void ListHeuristics() {
-            Console.BackgroundColor = ConsoleColor.DarkYellow;
-            Console.WriteLine($"Total Heuristics: {Functions.Count}");
-            Console.ResetColor();
             for (int i = 0; i < Functions.Count; i++) {
                 Console.WriteLine($"{i + 1}: {Functions[i].Title}");
             }
@@ -46,6 +43,7 @@ namespace ai_proj_3 {
 
         public static readonly HeuristicFunction HeuristicA;
         public static readonly HeuristicFunction HeuristicB;
+        // public static readonly HeuristicFunction HeuristicC;
 
         public static void Init() {
             return;
@@ -58,22 +56,30 @@ namespace ai_proj_3 {
                 }
             );
 
-            HeuristicB = new("h = |max_poll - min_poll|", (p) => {
-                int min = int.MaxValue;
-                int max = -1;
+            HeuristicB = new("h = |max_pole - min_pole|",
+                (p) => {
+                    int min = int.MaxValue;
+                    int max = -1;
 
-                foreach (Stack<int> poll in p) {
-                    int sum = poll.Sum();
-                    if (sum < min) {
-                        min = sum;
+                    foreach (Stack<int> pole in p) {
+                        int sum = pole.Sum();
+                        if (sum < min) {
+                            min = sum;
+                        }
+                        if (sum > max) {
+                            max = sum;
+                        }
                     }
-                    if (sum > max) {
-                        max = sum;
-                    }
+
+                    return Math.Abs(max - min);
                 }
+            );
 
-                return Math.Abs(max - min);
-            });
+            // HeuristicC = new("h = |weight(platform1) - weight(platform2)| + |num_boxes(platform1) - num_boxes(platform2)|",
+            //     (p) => {
+            //         return 0;
+            //     }
+            // );
         }
 
     }

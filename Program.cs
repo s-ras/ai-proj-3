@@ -5,16 +5,22 @@ namespace ai_proj_3 {
 
 	internal class Program {
 
+		public static bool finished = false;
+
 		static void Main(string[] args) {
 			Reader.ParseArgs(args);
 			Reader.ReadDataSet(out List<int> a, out List<int> b, out List<int> c, out int g);
 			HeuristicDefinitions.Init();
 			HeuristicFunction h = Input.GetInput();
 			Stopwatch sw = new();
+			Thread t = new(Node.TrackNodeCount);
+			t.Start();
 			sw.Start();
-			State? result = RunAlgorithm(h, a, b, c, g);
+			Node? result = RunAlgorithm(h, a, b, c, g);
 			sw.Stop();
 			TimeSpan ts = sw.Elapsed;
+			finished = true;
+			t.Join();
 			Console.BackgroundColor = ConsoleColor.DarkBlue;
 			Console.WriteLine($"Execution Time: {ts} ");
 			if (result != null) {
@@ -27,52 +33,51 @@ namespace ai_proj_3 {
 			}
 			Console.ResetColor();
 			result?.PrintPath();
-			result?.Print();
+			result?.S.Print();
 		}
 
-		static State? RunAlgorithm(HeuristicFunction h, List<int> a, List<int> b, List<int> c, int g) {
-			State start = new(a, b, c);
+		static Node? RunAlgorithm(HeuristicFunction h, List<int> a, List<int> b, List<int> c, int g) {
+			State initialState = State.CreateRoot(a, b, c);
 
-			List<State> open = [];
-			List<State> closed = [];
+			Node start = new(initialState);
 
-			open.Add(start);
+			PriorityQueue<Node, int> open = new();
+
+			HashSet<string> closed = [];
+
+			open.Enqueue(start, start.F);
 
 			while (open.Count > 0) {
 
-				State? s = open.MinBy(s => s.GetF());
-				if (s == null) {
+				Node? current = open.Dequeue();
+
+				if (current == null) {
 					break;
 				}
-				open.Remove(s);
-				List<State?> children = s.GenerateChildren(h);
-				foreach (State? child in children) {
-					if (child == null) {
-						continue;
-					}
-					if (child.IsGoal(g)) {
-						return child;
-					}
-					List<State> openEq = open.Where(s => State.IsEqual(s, child)).ToList();
-					State? openEqMin = openEq.MinBy(s => s.GetF());
-					if (openEqMin != null && openEqMin.GetF() < child.GetF()) {
-						continue;
-					}
-					List<State> closedEq = closed.Where(s => State.IsEqual(s, child)).ToList();
-					State? closedEqMin = closedEq.MinBy(s => s.GetF());
-					if (closedEqMin != null && closedEqMin.GetF() < child.GetF()) {
-						continue;
-					}
 
-					open.Add(child);
+				if (State.GoalTest(current.S)) {
+					return current;
 				}
 
-				closed.Add(s);
-			}
+				closed.Add(current.S.Signiture);
 
+				List<Node> children = current.GenerateChildren(h);
+
+				foreach (Node child in children) {
+
+					if (closed.Contains(child.S.Signiture)) {
+						continue;
+					}
+
+					child.Parent = current;
+					open.Enqueue(child, child.F);
+				}
+
+			}
 
 			return null;
 		}
+
 
 	}
 
