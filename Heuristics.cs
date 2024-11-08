@@ -43,7 +43,7 @@ namespace ai_proj_3 {
 
         public static readonly HeuristicFunction HeuristicA;
         public static readonly HeuristicFunction HeuristicB;
-        // public static readonly HeuristicFunction HeuristicC;
+        public static readonly HeuristicFunction HeuristicC;
 
         public static void Init() {
             return;
@@ -75,11 +75,21 @@ namespace ai_proj_3 {
                 }
             );
 
-            // HeuristicC = new("h = |weight(platform1) - weight(platform2)| + |num_boxes(platform1) - num_boxes(platform2)|",
-            //     (p) => {
-            //         return 0;
-            //     }
-            // );
+            HeuristicC = new("h = min (|a - b| + c, |b - c| + a, |c - a| + b)",
+                (p) => {
+                    int a_sum = p[0].Sum();
+                    int b_sum = p[1].Sum();
+                    int c_sum = p[2].Sum();
+
+                    int x_1 = Math.Abs(a_sum - b_sum) + c_sum;
+                    int x_2 = Math.Abs(b_sum - c_sum) + a_sum;
+                    int x_3 = Math.Abs(c_sum - a_sum) + b_sum;
+
+                    List<int> x = [x_1, x_2, x_3];
+
+                    return x.Min();
+                }
+            );
         }
 
     }
