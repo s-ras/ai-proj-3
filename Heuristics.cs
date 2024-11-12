@@ -1,9 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Threading.Tasks;
-
 namespace ai_proj_3 {
 
     public class HeuristicFunction {
@@ -44,6 +38,8 @@ namespace ai_proj_3 {
         public static readonly HeuristicFunction HeuristicA;
         public static readonly HeuristicFunction HeuristicB;
         public static readonly HeuristicFunction HeuristicC;
+        public static readonly HeuristicFunction HeuristicD;
+        public static readonly HeuristicFunction HeuristicE;
 
         public static void Init() {
             return;
@@ -90,6 +86,36 @@ namespace ai_proj_3 {
                     return x.Min();
                 }
             );
+
+            HeuristicD = new("h = min (a - b + c, b - c + a, c - a + b)",
+                (p) => {
+                    int a_sum = p[0].Sum();
+                    int b_sum = p[1].Sum();
+                    int c_sum = p[2].Sum();
+
+                    int x_1 = a_sum - b_sum + c_sum;
+                    int x_2 = b_sum - c_sum + a_sum;
+                    int x_3 = c_sum - a_sum + b_sum;
+
+                    List<int> x = [x_1, x_2, x_3];
+
+                    return x.Min();
+                }
+            );
+
+            HeuristicE = new("h = min (a, b, c)",
+                (p) => {
+                    int a_sum = p[0].Sum();
+                    int b_sum = p[1].Sum();
+                    int c_sum = p[2].Sum();
+
+                    List<int> x = [a_sum, b_sum, c_sum];
+
+                    return x.Min();
+                }
+            );
+
+
         }
 
     }

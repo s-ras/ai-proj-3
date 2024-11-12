@@ -43,7 +43,7 @@ namespace ai_proj_3 {
 
 			PriorityQueue<Node, int> open = new();
 
-			HashSet<string> closed = [];
+			Dictionary<string, int> visited = [];
 
 			open.Enqueue(start, start.F);
 
@@ -59,18 +59,23 @@ namespace ai_proj_3 {
 					return current;
 				}
 
-				closed.Add(current.S.Signiture);
-
 				List<Node> children = current.GenerateChildren(h);
 
 				foreach (Node child in children) {
 
-					if (closed.Contains(child.S.Signiture)) {
-						continue;
-					}
+					if (visited.TryGetValue(child.S.Signiture, out int F)) {
+						if (child.F < F) {
+							child.Parent = current;
+							open.Enqueue(child, child.F);
+							visited.TryAdd(child.S.Signiture, child.F);
 
-					child.Parent = current;
-					open.Enqueue(child, child.F);
+						}
+					} else {
+						child.Parent = current;
+						open.Enqueue(child, child.F);
+						visited.TryAdd(child.S.Signiture, child.F);
+
+					}
 				}
 
 			}
